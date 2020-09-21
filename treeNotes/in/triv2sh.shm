@@ -1,0 +1,78 @@
+#%	title	triv2sh
+#%	project	triv2sh
+#%	shortname	triv2sh
+#%	rootdir	/home/theo/projects/untangler/excel2app/in
+#%	sync	False
+#%	overwrite	True
+#%	xm_unnamed	True
+#%	xm_copies	True
+#%	xm_calendar	True
+#%	xm_entropy	True
+#%	xm_outlier	True
+#%	nopayload	True
+#%	project_type	formulator
+#%	xm_global	True
+#%	check	True
+#%	optimized	True
+#%	outfile	out/triv2sh.shm
+#%	min-size-canon-consistent-set	10
+#%	xm_consist	True
+#%	xm_unstyle	True
+0	in/triv2sh.xlsx
+	datetime
+	daynames
+#$ 0	1	c	0	 "hidden": "false", "style": "1", "width": "22.09" 
+#$ 0	1	c	1	 "hidden": "false", "style": "2", "width": "15.42" 
+#$ 0	1	c	2	 "hidden": "false", "style": "2", "width": "15.56" 
+#$ 0	1	c	3	 "hidden": "false", "style": "1", "width": "13.06" 
+#$ 0	1	c	4	 "hidden": "true", "style": "1", "width": "12.22" 
+#$ 0	1	c	5	 "hidden": "false", "style": "1", "width": "22.09" 
+#$ 0	1	c	6	 "hidden": "false", "style": "0", "width": "11.52" 
+#$ 0	1	c	7	 "hidden": "false", "ht": "12.8", "style": "" 
+#$ 0	1	c	8	 "hidden": "false", "ht": "12.8", "style": "" 
+#$ 0	1	c	9	 "hidden": "false", "ht": "12.8", "style": "" 
+#$ 0	1	c	10	 "hidden": "false", "ht": "12.8", "style": "" 
+#$ 0	1	c	11	 "hidden": "false", "ht": "12.8", "style": "" 
+#$ 0	1	c	12	 "hidden": "false", "ht": "12.8", "style": "" 
+#$ 0	1	c	13	 "hidden": "false", "ht": "12.8", "style": "" 
+#$ 0	1	c	14	 "hidden": "false", "ht": "12.8", "style": "" 
+#$ 0	1	c	15	 "hidden": "false", "ht": "12.8", "style": "" 
+#$ 0	0	c	0	 "hidden": "false", "style": "1", "width": "22.09" 
+#$ 0	0	c	1	 "hidden": "false", "style": "2", "width": "15.42" 
+#$ 0	0	c	2	 "hidden": "false", "style": "2", "width": "15.56" 
+#$ 0	0	c	3	 "hidden": "false", "style": "1", "width": "13.06" 
+#$ 0	0	c	4	 "hidden": "true", "style": "1", "width": "12.22" 
+#$ 0	0	c	5	 "hidden": "false", "style": "1", "width": "22.09" 
+#$ 0	0	c	6	 "hidden": "false", "style": "0", "width": "11.52" 
+#$ 0	0	c	7	 "hidden": "false", "ht": "12.8", "style": "" 
+#$ 0	0	c	8	 "hidden": "false", "ht": "12.8", "style": "" 
+#| bookix, sheetix, col, row, formula, value, type, style, from
+0	0	0	0		datetime	s	1	
+0	0	2	0	NOW()	43991.4268661635	n	3	
+0	0	0	1		hour	s	2	
+0	0	2	1	HOUR(A3)	10	n	2	
+0	0	0	2		minutes	s	2	
+0	0	2	2	MINUTE(A3)	14	n	2	
+0	0	0	3		seconds	s	1	
+0	0	2	3	SECOND(A3)	41	n	1	
+0	0	0	4		day nr	s	1	
+0	0	2	4	WEEKDAY(A3)	3	n	1	
+0	0	0	5		dayname	s	1	
+0	0	2	5	VLOOKUP(E3,daynames!H2:I9,2)	dinsdag	str	1	
+0	1	0	0		day names	s	1	
+0	1	1	7		0	n	4	
+0	1	2	7		1	n	6	
+0	1	3	7		2	n	6	
+0	1	4	7		3	n	6	
+0	1	5	7		4	n	6	
+0	1	6	7		5	n	6	
+0	1	7	7		6	n	6	
+0	1	8	7		7	n	9	
+0	1	1	8		zaterdag	s	5	
+0	1	2	8		zondag	s	7	
+0	1	3	8		maandag	s	7	
+0	1	4	8		dinsdag	s	7	
+0	1	5	8		woensdag	s	7	
+0	1	6	8		donderdag	s	7	
+0	1	7	8		vrijdag	s	7	
+0	1	8	8		zaterdag	s	10	

@@ -1,0 +1,25 @@
+#% title	triv2sh
+#% project	triv2sh
+#% shortname	triv2sh
+#% rootdir	/home/theo/projects/untangler/excel2app/in
+#% sync	False
+#% overwrite	True
+#% xm_unnamed	True
+#% xm_copies	True
+#% xm_calendar	True
+#% xm_entropy	True
+#% xm_outlier	True
+#% nopayload	True
+#% project_type	formulator
+#% xm_global	True
+#% check	True
+#% optimized	True
+#% outfile	out/triv2sh.shm
+#% min-size-canon-consistent-set	10
+#% xm_consist	True
+#% xm_unstyle	True
+0	in/triv2sh.xlsx
+	datetime
+	daynames
+#| bookix, sheetix, col, row, formula, value, type, style, from
+#+	s	0	1	0	0	1
