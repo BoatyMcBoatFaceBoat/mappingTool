@@ -1,0 +1,11 @@
+{
+  "name": "treenotes",
+  "version": "1.0.0",
+  "description": "show linkcounts",
+  "main": "script2.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "irene",
+  "license": "ISC"
+}
