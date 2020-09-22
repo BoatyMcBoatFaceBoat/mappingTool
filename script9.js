@@ -367,7 +367,7 @@ function makeTree(){
       mergedEdges
         .select('path')
         .style('stroke-width', d => d.cnt)
-        .style('opacity', d => console.log("edges"))
+        .style('opacity', 0.5)
         .transition(t)
         // .duration(1000)
         .attr("d", function (d) {
