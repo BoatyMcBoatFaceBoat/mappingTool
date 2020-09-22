@@ -100,14 +100,15 @@ function mergeFrom(curNode, pathRest, bookIx) {
 
 
 const margin = 20;
-const treeBoxWidth = 50;
-const animationDelay = 500;
-let stdBoxHeight = 40;
-let stdBoxWidth = 80;
-let innerBoxPadding = 5;
-let fontSize = 14;
+const smPadding = 5;
+const stdBoxHeight = 40;
+const stdBoxWidth = 80;
+const smFontSize = 10;
+const lgFontSize = 14;
+const pathXCurve = 100;
+const pathYCurve = 20;
+const animationDelayMs = 500;
 let sheetLevelShown = false;
-const textPadding = 5;
 
 
 function Tree(treeData){
@@ -115,7 +116,6 @@ function Tree(treeData){
   this.treeRoot = {};
   this.currentEdges = [];
   this.nodeHash = {};
-
   this.bookEdges = [];
   this.sheetEdges = [];
   this.edges = this.bookEdges;
@@ -128,15 +128,16 @@ function Tree(treeData){
     })
        
     this.treeRoot.descendants().forEach(node => {
-      if(node.data.type == 'book'){
-        { bookNodeRegister[node.data.ix] = node;
-          sheetNodeRegister[node.data.ix] = node;
-        }
+      if(node.data.type == 'book') {
+        bookNodeRegister[node.data.ix] = node;
       }
     })
 
     this.treeRoot.descendants().forEach(node => {
       if(node.data.type == 'sheet') {
+        if(typeof sheetNodeRegister[node.parent.data.ix] ===  'undefined'){
+          sheetNodeRegister[node.parent.data.ix] = [];
+        } 
         sheetNodeRegister[node.parent.data.ix][node.data.ix] = node;
       }
     });
@@ -145,7 +146,7 @@ function Tree(treeData){
 
   this.calculateShape = function(h, w, sheets) {
     this.treeRoot.descendants().forEach((node)=> {
-      node.children ? node.fontSize = 14 : node.fontSize = 10;
+      node.children ? node.fontSize = lgFontSize : node.fontSize = smFontSize;
       node.boxHeight = stdBoxHeight;
       node.boxWidth = stdBoxWidth;
 
@@ -161,7 +162,7 @@ function Tree(treeData){
       } 
     });
   
-    let treeDiagram = d3.cluster().size([h, w])(this.treeRoot);
+    const treeDiagram = d3.cluster().size([h, w])(this.treeRoot);
 
     this.treeRoot.descendants().forEach((node) => {
       if( node.data.type == 'sheet'){
@@ -225,8 +226,8 @@ function makeTree(){
                 .style('opacity', 0);
 
   const menuDiv = d3.select('body')
-  .append('div')
-  .attr('class', 'menu');
+    .append('div')
+    .attr('class', 'menu');
   const menu = d3.select('.menu');
   const button = menu.append('div');
   button.append('button')
@@ -254,8 +255,8 @@ function makeTree(){
   function redraw(){
     const treeDivWidth = treeDiv.node().getBoundingClientRect().width - 2 * margin;
     const treeGraphHeight = treeDiv.node().getBoundingClientRect().height - 2 * margin;
-    const treeGraphWidth = treeDivWidth - 2 * margin - 2 * treeBoxWidth;
-    tG.attr("transform", `translate(${0.5 * treeBoxWidth + margin}, ${margin})`)
+    const treeGraphWidth = treeDivWidth - 2 * margin - 2 * stdBoxWidth;
+    tG.attr("transform", `translate(${0.5 * stdBoxWidth + margin}, ${margin})`)
 
     animateShape();
     button.on('click', function removeOrAddLevel(d) {
@@ -271,8 +272,6 @@ function makeTree(){
 
       let dataBoundNodes = tG.selectAll('.gNode')
         .data(tree.treeRoot.descendants());
-      
-      // dataBoundNodes.select('rect').exit().transition(t).attr('color', 'red');
       dataBoundNodes.exit().remove();
 
       let dataBoundLinks = tG.selectAll('.gLink')
@@ -281,9 +280,7 @@ function makeTree(){
 
       let dataBoundEdges = tG.selectAll('.gEdge')
         .data(tree.edges)
-        // .each(d => console.log(d));
       dataBoundEdges.exit().remove();
-      console.log(dataBoundEdges);
 
       let gNodes = dataBoundNodes
         .enter()
@@ -337,7 +334,7 @@ function makeTree(){
       mergedNodes
         .select('clipPath')
         .select('rect')
-        .attr('width', d => d.boxWidth - 2 * textPadding)
+        .attr('width', d => d.boxWidth - 2 * smPadding)
         .attr('height', d => d.boxHeight)
         .attr('y', d => -0.5 * d.boxHeight);
       mergedNodes
@@ -348,10 +345,10 @@ function makeTree(){
         .attr('transform', function (d) {
           if(d.data.type == 'book'){
             if(sheetLevelShown){
-              return `translate(${textPadding}, ${-0.5 * d.boxHeight - textPadding})`;
+              return `translate(${smPadding}, ${-0.5 * d.boxHeight - smPadding})`;
             }
           } 
-          return `translate(${textPadding}, ${0.5 * d.fontSize})`;
+          return `translate(${smPadding}, ${0.5 * d.fontSize})`;
         })
         .attr('font-size', d => d.fontSize);
 
@@ -383,8 +380,8 @@ function makeTree(){
           }
         
           return `M ${d[to].y + d[to].boxWidth} ${d[to].x} 
-                  C ${d[to].y + d[to].boxWidth + 100} ${d[to].x - 20 }, 
-                    ${d[from].y - 100}                   ${d[from].x + 20}, 
+                  C ${d[to].y + d[to].boxWidth + pathXCurve} ${d[to].x - pathYCurve }, 
+                    ${d[from].y - pathXCurve}                   ${d[from].x + pathYCurve}, 
                     ${d[from].y} ${d[from].x}`;
         })
     }
