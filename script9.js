@@ -177,11 +177,16 @@ function Tree(treeData){
       }
     })
 
+
+
     if(sheets){
       this.edges = this.sheetEdges;
     } else {
       this.edges = this.bookEdges;
     }
+
+    console.log(`calculate shape with sheets shown: ${sheets}`);
+    console.log(this.edges);
   },
 
   this.createEdges = function(){
@@ -189,21 +194,21 @@ function Tree(treeData){
       linkObj.sheeta = sheetNodeRegister[linkObj.bookixa][linkObj.sheetixa];
       linkObj.sheetb = sheetNodeRegister[linkObj.bookixb][linkObj.sheetixb];
       linkObj.cnt = parseInt(linkObj.cnt);
-      this.sheetEdges = linkObj;
+      this.sheetEdges.push(linkObj);
     })
     bookLinks.forEach((linkObj) => {
       linkObj.booka = bookNodeRegister[linkObj.bookixa];
       linkObj.bookb = bookNodeRegister[linkObj.bookixb];
       linkObj.cnt = parseInt(linkObj.cnt);
-      this.bookEdges = linkObj;
+      this.bookEdges.push(linkObj);
     })
   }
 }
 
 
 function makeTree(){
-  let tree = new Tree(treeData);
-  tree.createPrimaryRoot();
+  const tree = new Tree(treeData);
+  tree.createPrimaryRoot(sheetLevelShown);
 
   const treeDiv = d3.select('#treeDiagram');
   const tSvg = treeDiv.select('svg');
@@ -261,6 +266,8 @@ function makeTree(){
     function animateShape(){
       d3.select('.sheetStatus').text(sheetLevelShown);
       tree.calculateShape(treeGraphHeight, treeGraphWidth, sheetLevelShown) ;
+      console.log("tree edges");
+      console.log(tree.edges);
 
       let dataBoundNodes = tG.selectAll('.gNode')
         .data(tree.treeRoot.descendants());
@@ -273,8 +280,10 @@ function makeTree(){
       dataBoundLinks.exit().remove();
 
       let dataBoundEdges = tG.selectAll('.gEdge')
-        .data(tree.edges);
+        .data(tree.edges)
+        // .each(d => console.log(d));
       dataBoundEdges.exit().remove();
+      console.log(dataBoundEdges);
 
       let gNodes = dataBoundNodes
         .enter()
@@ -305,6 +314,7 @@ function makeTree(){
         .enter()
         .append('g')
         .attr('class', 'gEdge');
+
       gEdges
         .append('path')
         .attr('class', 'inactive')
@@ -362,7 +372,7 @@ function makeTree(){
         // .duration(1000)
         .attr("d", function (d) {
           let from, to;
-          console.log(d);
+          console.log('drawing edges');
           if (sheetLevelShown) {
             from = 'sheeta';
             to = 'sheetb';

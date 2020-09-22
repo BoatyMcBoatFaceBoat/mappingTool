@@ -23,3 +23,7 @@ branch: layout
 
 move d3 layout back to script
 
+## 20200922
+
+- fix issue with drawing edges!!
+
