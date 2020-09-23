@@ -28,3 +28,8 @@ move d3 layout back to script
 - fix issue with drawing edges!! DOOONNNEE
 
 
+## 20200923
+
+moving stylistic information to css style script 
+changing the edges are drawn, instead of with append, using visibility.This allows for more clear transition effect. With append one path moves into another, while bound data is completely unrelated.
+

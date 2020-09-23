@@ -24,6 +24,9 @@ let linkCntsPerLine = linkCnts.split('\n');
 let mapLines = [];
 let pathSections = [];
 let curBookIx;
+let cntMax, cntMin;
+let prevMax, prevMin;
+
 linkCntsPerLine.forEach(line => {
   let hasHash, isLink;
   if (/^#/.test(line)) {
@@ -62,13 +65,19 @@ linkCntsPerLine.forEach(line => {
       sheetLinks.push(linkObject);
     } else {
       let booklinkObject = {};
-      booklinkObject.bookixa = +args[1];
-      booklinkObject.bookixb = +args[2];
-      booklinkObject.cnt = +args[3];
-      bookLinks.push(booklinkObject);
+      linkObject.bookixa = +args[1];
+      linkObject.bookixb = +args[2];
+      linkObject.cnt = +args[3];
+      bookLinks.push(linkObject);
     }
+    cntMax = d3.max([linkObject.cnt, prevMax]);
+    cntMin = d3.min([linkObject.cnt, prevMin]);
+    prevMax = cntMax;
+    prevMin = cntMin;
   }
 });
+
+console.log(`cntMax: ${cntMax}`);
 
 function mergeFrom(curNode, pathRest, bookIx) {
   while (pathRest.length) {
@@ -109,7 +118,7 @@ const pathXCurve = 100;
 const pathYCurve = 20;
 const animationDelayMs = 500;
 let sheetLevelShown = false;
-
+const pathLogScale = d3.scaleLog().domain([cntMin, cntMax]).range([1, 10]);
 
 function Tree(treeData){
   this.treeData = treeData;
@@ -236,9 +245,10 @@ function makeTree(){
 
   const showTooltip = function(d) {
     toolDiv
-      .transition().duration(200)
+      // .transition().duration(200)
       .style('opacity', 0.8);
     toolDiv.html('name: ' + d.data.name + '<br>' + 'type: ' + d.data.type)
+      // .style('left', (d3.event.pageX) + "px")
       .style('left', (d3.event.pageX) + "px")
       .style("top", (d3.event.pageY - 28) + "px");
   }
@@ -315,6 +325,7 @@ function makeTree(){
       gEdges
         .append('path')
         .attr('class', 'inactive')
+        .attr('visibility', 'hidden')
         .style('fill', 'none')
         .style('opacity', 0.25)
 
@@ -335,21 +346,16 @@ function makeTree(){
         .select('clipPath')
         .select('rect')
         .attr('width', d => d.boxWidth - 2 * smPadding)
-        .attr('height', d => d.boxHeight)
+        .attr('height', d => d.boxHeight - 2 * smPadding)
         .attr('y', d => -0.5 * d.boxHeight);
       mergedNodes
         .select('text')
-        .attr('clip-path', d => `url(#clip${d.data.name})`)
+        .attr('clip-path', d => d.data.type !== 'book' ? `url(#clip${d.data.name})` : 0)
         .text(d => (d.data.name + d.data.type))
         .attr("color", d => d.children  ? 'black' : 'gray')
-        .attr('transform', function (d) {
-          if(d.data.type == 'book'){
-            if(sheetLevelShown){
-              return `translate(${smPadding}, ${-0.5 * d.boxHeight - smPadding})`;
-            }
-          } 
-          return `translate(${smPadding}, ${0.5 * d.fontSize})`;
-        })
+        .attr('x', smPadding)
+        .attr('y', d => d.data.type == 'book' && sheetLevelShown ? 
+                  -0.5 * d.boxHeight - smPadding : 0  )
         .attr('font-size', d => d.fontSize);
 
       mergedLinks
@@ -363,9 +369,14 @@ function makeTree(){
 
       mergedEdges
         .select('path')
-        .style('stroke-width', d => d.cnt)
+        // .transition('delay', 1000)
+        // .transition(t)
+        // .transition()
+        // .duration(1000)
+        // .delay(1000)
+        // .attr('visibility', 'visible')
+        .style('stroke-width', d => pathLogScale(d.cnt))
         .style('opacity', 0.5)
-        .transition(t)
         // .duration(1000)
         .attr("d", function (d) {
           let from, to;
@@ -378,12 +389,15 @@ function makeTree(){
             to = 'bookb';
             if(d[from] === d[to]) { return; }
           }
-        
+          
           return `M ${d[to].y + d[to].boxWidth} ${d[to].x} 
                   C ${d[to].y + d[to].boxWidth + pathXCurve} ${d[to].x - pathYCurve }, 
                     ${d[from].y - pathXCurve}                   ${d[from].x + pathYCurve}, 
                     ${d[from].y} ${d[from].x}`;
         })
+        // .transition()
+        // .duration(1000)
+        // .delay(1000)
     }
   }
 
