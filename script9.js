@@ -16,6 +16,7 @@ let treeData = {name: 'primaryRoot', type: 'root', children: []};
 let latest;
 let bookIndex;
 let sheetIndex;
+let allLinks = [];
 let bookLinks = [];
 let sheetLinks = [];
 let bookNodeRegister = [];
@@ -62,14 +63,17 @@ linkCntsPerLine.forEach(line => {
       linkObject.bookixb = +args[3];
       linkObject.sheetixb = +args[4];
       linkObject.cnt = +args[5];
+      linkObject.type = 'sheet';
       sheetLinks.push(linkObject);
     } else {
       let booklinkObject = {};
       linkObject.bookixa = +args[1];
       linkObject.bookixb = +args[2];
       linkObject.cnt = +args[3];
+      linkObject.type = 'book';
       bookLinks.push(linkObject);
     }
+    allLinks.push(linkObject);
     cntMax = d3.max([linkObject.cnt, prevMax]);
     cntMin = d3.min([linkObject.cnt, prevMin]);
     prevMax = cntMax;
@@ -127,7 +131,8 @@ function Tree(treeData){
   this.nodeHash = {};
   this.bookEdges = [];
   this.sheetEdges = [];
-  this.edges = this.bookEdges;
+  // this.edges = this.bookEdges;
+  this.edges = allLinks;
 
 
   this.createPrimaryRoot = function(sheets) {
@@ -189,29 +194,41 @@ function Tree(treeData){
 
 
 
-    if(sheets){
-      this.edges = this.sheetEdges;
-    } else {
-      this.edges = this.bookEdges;
-    }
+    // if(sheets){
+    //   this.edges = this.sheetEdges;
+    // } else {
+    //   this.edges = this.bookEdges;
+    // }
 
     console.log(`calculate shape with sheets shown: ${sheets}`);
     console.log(this.edges);
   },
 
   this.createEdges = function(){
-    sheetLinks.forEach((linkObj) => {
-      linkObj.sheeta = sheetNodeRegister[linkObj.bookixa][linkObj.sheetixa];
-      linkObj.sheetb = sheetNodeRegister[linkObj.bookixb][linkObj.sheetixb];
-      linkObj.cnt = parseInt(linkObj.cnt);
-      this.sheetEdges.push(linkObj);
+    // sheetLinks.forEach((linkObj) => {
+    //   linkObj.sheeta = sheetNodeRegister[linkObj.bookixa][linkObj.sheetixa];
+    //   linkObj.sheetb = sheetNodeRegister[linkObj.bookixb][linkObj.sheetixb];
+    //   linkObj.cnt = parseInt(linkObj.cnt);
+    //   // this.sheetEdges.push(linkObj);
+    // })
+    // bookLinks.forEach((linkObj) => {
+    //   linkObj.booka = bookNodeRegister[linkObj.bookixa];
+    //   linkObj.bookb = bookNodeRegister[linkObj.bookixb];
+    //   linkObj.cnt = parseInt(linkObj.cnt);
+    //   // this.bookEdges.push(linkObj);
+    // })
+    allLinks.forEach((linkObj) => {
+      if(linkObj.type == 'book'){
+        linkObj.booka = bookNodeRegister[linkObj.bookixa];
+        linkObj.bookb = bookNodeRegister[linkObj.bookixb];
+      } else {
+        linkObj.sheeta = sheetNodeRegister[linkObj.bookixa][linkObj.sheetixa];
+        linkObj.sheetb = sheetNodeRegister[linkObj.bookixb][linkObj.sheetixb];
+        linkObj.cnt = parseInt(linkObj.cnt);
+        this.edges.push(linkObj);
+      }
     })
-    bookLinks.forEach((linkObj) => {
-      linkObj.booka = bookNodeRegister[linkObj.bookixa];
-      linkObj.bookb = bookNodeRegister[linkObj.bookixb];
-      linkObj.cnt = parseInt(linkObj.cnt);
-      this.bookEdges.push(linkObj);
-    })
+
   }
 }
 
@@ -325,7 +342,7 @@ function makeTree(){
       gEdges
         .append('path')
         .attr('class', 'inactive')
-        .attr('visibility', 'hidden')
+        // .attr('visibility', 'hidden')
         .style('fill', 'none')
         .style('opacity', 0.25)
 
@@ -374,14 +391,16 @@ function makeTree(){
         // .transition()
         // .duration(1000)
         // .delay(1000)
-        // .attr('visibility', 'visible')
+        .attr('visibility', 'hidden')
         .style('stroke-width', d => pathLogScale(d.cnt))
         .style('opacity', 0.5)
         // .duration(1000)
         .attr("d", function (d) {
           let from, to;
           console.log('drawing edges');
-          if (sheetLevelShown) {
+          console.log(d);
+          // if (sheetLevelShown) {
+          if (d.type == 'sheet'){
             from = 'sheeta';
             to = 'sheetb';
           } else {
@@ -395,11 +414,30 @@ function makeTree(){
                     ${d[from].y - pathXCurve}                   ${d[from].x + pathYCurve}, 
                     ${d[from].y} ${d[from].x}`;
         })
+        .transition(t)
+        // .duration(1000)
+        // .delay(1000)
+        .attr('visibility', d => {
+          if (d.type == 'book'){
+            if (sheetLevelShown) {
+              return 'hidden';
+              
+            } else { 
+              return 'visible';
+            }
+          }
+          if (d.type == 'sheet'){
+            if (sheetLevelShown) {
+              return 'visible';
+          } else { 
+            return 'hidden';
+          }
+        }
         // .transition()
         // .duration(1000)
         // .delay(1000)
+      });
+      // .attr('visibility', 'visible');
     }
   }
-
-
 }
