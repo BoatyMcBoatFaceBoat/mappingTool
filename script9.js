@@ -335,7 +335,7 @@ function makeTree(){
       mergedNodes
         .select('text')
         .attr('clip-path', d => d.data.type !== 'book' ? `url(#clip${d.data.name})` : 0)
-        .text(d => (d.data.name + d.data.type))
+        .text(d => (d.data.name))
         .attr('x', smPadding)
         .attr('y', d => d.data.type == 'book' && sheetLevelShown ? 
                   -0.5 * d.boxHeight - smPadding : 0  )
