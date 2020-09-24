@@ -7,7 +7,6 @@
 </head>
 
 <body onload="makeTree()">
-<!-- <body> -->
   <div id="treeDiagram">
     <svg height="100%" width="100%">    </svg>
   </div>
@@ -20,73 +19,35 @@
     height: calc(100% );
     margin: 0;
     display: flex;
-    background-color: rgb(231, 231, 231)
+    background-color: rgb(231, 231, 231);
+    font-family: Arial, Helvetica, sans-serif;
   }
 
   #treeDiagram {
-    /* padding: 50px; */
     position: absolute;
-    top: 0;
-    left: 200px;
+    top: 40px;
+    left: 0;
     bottom: 0;
     right: 0;
-
-    /* height: calc(100% - 2 * 10px); */
-    /* width: calc(50% - 2 * 10px); */
-    
-    /* margin: 10px; */
   }
 
   .menu{
     position: absolute;
     left: 0;
     top: 0;
-    bottom: 0;
-    width: 200px;
-    padding: 20px;
+    right: 0;
+    height: 40px;
+    padding: 10px;
+    box-sizing: border-box;
   }
-
-  
 
   svg{
     background-color: rgb(255, 255, 255);
   }
 
-  .inactive{
-    stroke: black;
-  }
-
-  .hovered, .hovered > * {
-    fill: red ;
-  }
-
-  .hovered > path {
-    fill: none;
-    stroke: red;
-  }
-
-  .out > path {
-    stroke: blue;
-    opacity: 1;
-  }
-
-  .in > path {
-    stroke: green;
-    opacity: 1;
-  }
-
-  .source > * {
-    fill: yellowgreen;
-  }
-
-  .target > * {
-    fill: lightseagreen;
-  }
-
   div.toolTip {	
     position: absolute;			
     text-align: center;			
-    /* width: 100px;					 */
     height: 28px;					
     padding: 10px;				
     font: 12px sans-serif;		
@@ -94,20 +55,11 @@
     border: 0px;		
     border-radius: 4px;			
     pointer-events: none;			
-}
+  }
 
-g.visible{
-  visibility: visible;
-}
-g.hidden{
-  visibility: hidden;
-}
-
-text {
-  /* vertical-align: middle; */
-  dominant-baseline: middle;
-  color: red;
-}
+    dominant-baseline: middle;
+    color: red;
+  }
 
 
 

@@ -64,14 +64,11 @@ linkCntsPerLine.forEach(line => {
       linkObject.sheetixb = +args[4];
       linkObject.cnt = +args[5];
       linkObject.type = 'sheet';
-      sheetLinks.push(linkObject);
     } else {
-      let booklinkObject = {};
       linkObject.bookixa = +args[1];
       linkObject.bookixb = +args[2];
       linkObject.cnt = +args[3];
       linkObject.type = 'book';
-      bookLinks.push(linkObject);
     }
     allLinks.push(linkObject);
     cntMax = d3.max([linkObject.cnt, prevMax]);
@@ -111,7 +108,6 @@ function mergeFrom(curNode, pathRest, bookIx) {
   }
 }
 
-
 const margin = 20;
 const smPadding = 5;
 const stdBoxHeight = 40;
@@ -129,9 +125,6 @@ function Tree(treeData){
   this.treeRoot = {};
   this.currentEdges = [];
   this.nodeHash = {};
-  this.bookEdges = [];
-  this.sheetEdges = [];
-  // this.edges = this.bookEdges;
   this.edges = allLinks;
 
 
@@ -193,32 +186,9 @@ function Tree(treeData){
         }
       }
     })
-
-
-
-    // if(sheets){
-    //   this.edges = this.sheetEdges;
-    // } else {
-    //   this.edges = this.bookEdges;
-    // }
-
-    console.log(`calculate shape with sheets shown: ${sheets}`);
-    console.log(this.edges);
   },
 
   this.createEdges = function(){
-    // sheetLinks.forEach((linkObj) => {
-    //   linkObj.sheeta = sheetNodeRegister[linkObj.bookixa][linkObj.sheetixa];
-    //   linkObj.sheetb = sheetNodeRegister[linkObj.bookixb][linkObj.sheetixb];
-    //   linkObj.cnt = parseInt(linkObj.cnt);
-    //   // this.sheetEdges.push(linkObj);
-    // })
-    // bookLinks.forEach((linkObj) => {
-    //   linkObj.booka = bookNodeRegister[linkObj.bookixa];
-    //   linkObj.bookb = bookNodeRegister[linkObj.bookixb];
-    //   linkObj.cnt = parseInt(linkObj.cnt);
-    //   // this.bookEdges.push(linkObj);
-    // })
     allLinks.forEach((linkObj) => {
       if(linkObj.type == 'book'){
         linkObj.booka = bookNodeRegister[linkObj.bookixa];
@@ -242,7 +212,6 @@ function makeTree(){
   const treeDiv = d3.select('#treeDiagram');
   const tSvg = treeDiv.select('svg');
   let tG = tSvg.append('g');
-  // const colorScale = ['red', 'orange', 'yellow', 'green', 'blue'];
   const colors = d3.schemePastel2;
   const nodeTypes = ['root', 'folder', 'book', 'sheet', 'cell'];
   const colorScale = d3.scaleOrdinal().domain(nodeTypes).range(colors).unknown('#333');
@@ -259,15 +228,13 @@ function makeTree(){
   const menu = d3.select('.menu');
   const button = menu.append('div');
   button.append('button')
-        .text('show sheet level');   
-  menu.append('p').attr('class', 'sheetStatus').text(sheetLevelShown);
+        .text('switch view');   
 
   const showTooltip = function(d) {
     toolDiv
-      // .transition().duration(200)
-      .style('opacity', 0.8);
+      .transition().duration(200)
+      .style('opacity', 0.9);
     toolDiv.html('name: ' + d.data.name + '<br>' + 'type: ' + d.data.type)
-      // .style('left', (d3.event.pageX) + "px")
       .style('left', (d3.event.pageX) + "px")
       .style("top", (d3.event.pageY - 28) + "px");
   }
@@ -344,7 +311,6 @@ function makeTree(){
       gEdges
         .append('path')
         .attr('class', 'inactive')
-        // .attr('visibility', 'hidden')
         .style('fill', 'none')
         .style('opacity', 0.25)
 
@@ -353,7 +319,6 @@ function makeTree(){
       let mergedEdges = gEdges.merge(dataBoundEdges);
 
       mergedNodes
-        // .transition(t)
         .attr('transform', d =>`translate(${d.y}, ${d.x})`)
       mergedNodes
         .select('rect')
@@ -378,8 +343,6 @@ function makeTree(){
 
       mergedLinks
         .select('line')
-        // .transition(t)
-        // .duration(1000)
         .attr("x1", d => d.source.data.type === 'book' ? 0 : d.source.y + stdBoxWidth)
         .attr("y1", d => d.source.data.type === 'book' ? 0 : d.source.x)
         .attr("x2", d => d.source.data.type === 'book' ? 0 : d.target.y)
@@ -387,7 +350,6 @@ function makeTree(){
 
       mergedEdges
         .select('path')
-        // .attr('visibility', 'hidden')
         .style('stroke', 'red')
         .style('stroke-width', d => pathLogScale(d.cnt))
         .style('opacity', 0.3)
@@ -395,7 +357,6 @@ function makeTree(){
           let from, to;
           console.log('drawing edges');
           console.log(d);
-          // if (sheetLevelShown) {
           if (d.type == 'sheet'){
             from = 'sheeta';
             to = 'sheetb';
@@ -413,9 +374,6 @@ function makeTree(){
 
         mergedEdges
           .attr('visibility', 'hidden')
-          // .transition()
-          // .duration(1000)
-          // .delay(200)
           .attr('visibility', d => {
             if (d.type == 'book'){
               if (sheetLevelShown) {
@@ -432,11 +390,7 @@ function makeTree(){
               return 'hidden';
             }
           }
-        // .transition()
-        // .duration(1000)
-        // .delay(1000)
       });
-      // .attr('visibility', 'visible');
     }
   }
 }
