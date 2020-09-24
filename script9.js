@@ -115,7 +115,7 @@ function mergeFrom(curNode, pathRest, bookIx) {
 const margin = 20;
 const smPadding = 5;
 const stdBoxHeight = 40;
-const stdBoxWidth = 80;
+const stdBoxWidth = 120;
 const smFontSize = 10;
 const lgFontSize = 14;
 const pathXCurve = 100;
@@ -160,9 +160,9 @@ function Tree(treeData){
 
   this.calculateShape = function(h, w, sheets) {
     this.treeRoot.descendants().forEach((node)=> {
-      node.children ? node.fontSize = lgFontSize : node.fontSize = smFontSize;
       node.boxHeight = stdBoxHeight;
       node.boxWidth = stdBoxWidth;
+      
 
       if( node.data.type == 'book' ){
         if (sheets){
@@ -181,8 +181,10 @@ function Tree(treeData){
     this.treeRoot.descendants().forEach((node) => {
       if( node.data.type == 'sheet'){
         node.y = node.parent.y + margin;
+        node.fontSize = smFontSize;
       }
       if(node.data.type == 'book'){
+        node.fontSize = lgFontSize;
         if(node.children){
           if (sheets){
             node.boxHeight = node.children[node.children.length - 1].x - node.children[0].x + stdBoxHeight + 2* margin;
@@ -320,7 +322,7 @@ function makeTree(){
         .attr('class', 'treeBox')
         .attr('fill', 'grey')
         .style('opacity', 0.3)
-        .style('stroke', d => 'black');
+        .style('stroke', d => 'grey');
       gNodes.append('text');
       gNodes.append('clipPath')
         .attr('id', d => `clip${d.data.name}`)
@@ -351,7 +353,7 @@ function makeTree(){
       let mergedEdges = gEdges.merge(dataBoundEdges);
 
       mergedNodes
-        .transition(t)
+        // .transition(t)
         .attr('transform', d =>`translate(${d.y}, ${d.x})`)
       mergedNodes
         .select('rect')
@@ -369,7 +371,6 @@ function makeTree(){
         .select('text')
         .attr('clip-path', d => d.data.type !== 'book' ? `url(#clip${d.data.name})` : 0)
         .text(d => (d.data.name + d.data.type))
-        .attr("color", d => d.children  ? 'black' : 'gray')
         .attr('x', smPadding)
         .attr('y', d => d.data.type == 'book' && sheetLevelShown ? 
                   -0.5 * d.boxHeight - smPadding : 0  )
@@ -377,7 +378,7 @@ function makeTree(){
 
       mergedLinks
         .select('line')
-        .transition(t)
+        // .transition(t)
         // .duration(1000)
         .attr("x1", d => d.source.data.type === 'book' ? 0 : d.source.y + stdBoxWidth)
         .attr("y1", d => d.source.data.type === 'book' ? 0 : d.source.x)
@@ -386,15 +387,10 @@ function makeTree(){
 
       mergedEdges
         .select('path')
-        // .transition('delay', 1000)
-        // .transition(t)
-        // .transition()
-        // .duration(1000)
-        // .delay(1000)
-        .attr('visibility', 'hidden')
+        // .attr('visibility', 'hidden')
+        .style('stroke', 'red')
         .style('stroke-width', d => pathLogScale(d.cnt))
-        .style('opacity', 0.5)
-        // .duration(1000)
+        .style('opacity', 0.3)
         .attr("d", function (d) {
           let from, to;
           console.log('drawing edges');
@@ -409,30 +405,33 @@ function makeTree(){
             if(d[from] === d[to]) { return; }
           }
           
-          return `M ${d[to].y + d[to].boxWidth} ${d[to].x} 
-                  C ${d[to].y + d[to].boxWidth + pathXCurve} ${d[to].x - pathYCurve }, 
-                    ${d[from].y - pathXCurve}                   ${d[from].x + pathYCurve}, 
-                    ${d[from].y} ${d[from].x}`;
-        })
-        .transition(t)
-        // .duration(1000)
-        // .delay(1000)
-        .attr('visibility', d => {
-          if (d.type == 'book'){
-            if (sheetLevelShown) {
-              return 'hidden';
-              
+          return `M ${d[to].y + d[to].boxWidth } ${d[to].x} 
+                  C ${d[to].y + d[to].boxWidth + 100  } ${d[to].x }, 
+                    ${d[from].y - 100}                  ${d[from].x  }, 
+                    ${d[from].y } ${d[from].x}`;
+        });
+
+        mergedEdges
+          .attr('visibility', 'hidden')
+          // .transition()
+          // .duration(1000)
+          // .delay(200)
+          .attr('visibility', d => {
+            if (d.type == 'book'){
+              if (sheetLevelShown) {
+                return 'hidden';
+                
+              } else { 
+                return 'visible';
+              }
+            }
+            if (d.type == 'sheet'){
+              if (sheetLevelShown) {
+                return 'visible';
             } else { 
-              return 'visible';
+              return 'hidden';
             }
           }
-          if (d.type == 'sheet'){
-            if (sheetLevelShown) {
-              return 'visible';
-          } else { 
-            return 'hidden';
-          }
-        }
         // .transition()
         // .duration(1000)
         // .delay(1000)
